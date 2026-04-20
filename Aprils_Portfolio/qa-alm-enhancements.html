@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>QA ALM. Enhancements &amp; AI Integration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:      #f0f6fb;
+    --bg2:     #ffffff;
+    --bg3:     #cce0f0;
+    --border:  rgba(26,74,119,0.1);
+    --border2: rgba(26,74,119,0.2);
+    --text:    #080e18;
+    --muted:   #1a4a77;
+    --accent:  #1a4a77;
+    --accent2: #4488bb;
+    --dim:     rgba(26,74,119,0.07);
+    --green:   #0e5040;
+    --green-bg: rgba(14,80,64,0.07);
+    --amber:   #7a4f00;
+    --amber-bg: rgba(122,79,0,0.07);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+    mask-image: radial-gradient(ellipse 80% 50% at 50% 0%, black 10%, transparent 70%);
+    opacity: 0.3;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 48px;
+    background: #006650;
+  }
+
+  .nav-back {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #ffffff;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: color 0.2s;
+  }
+
+  .nav-back:hover { color: rgba(255,255,255,0.75); }
+  .nav-back::before { content: '←'; font-size: 14px; }
+
+  .nav-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #ffffff;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    z-index: 1;
+    padding: 140px 48px 80px;
+    border-bottom: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 80px;
+    align-items: end;
+  }
+
+  .hero-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .hero-tag::before {
+    content: '';
+    width: 24px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .hero-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.2rem, 5vw, 4rem);
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--accent2);
+  }
+
+  .hero-summary {
+    font-size: 15px;
+    color: var(--muted);
+    margin-top: 24px;
+    max-width: 560px;
+    line-height: 1.8;
+  }
+
+  .hero-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1px solid rgba(26,74,119,0.5);
+    border-radius: 8px;
+    overflow: visible;
+    background: linear-gradient(160deg, #1a4a77 0%, #0d2e55 60%, #081c38 100%);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.08) inset,
+      0 4px 20px rgba(26,74,119,0.35),
+      0 12px 40px rgba(7,29,56,0.30),
+      0 2px 6px rgba(0,0,0,0.20);
+  }
+
+  .meta-item {
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .meta-item:first-child { border-radius: 8px 8px 0 0; }
+  .meta-item:last-child { border-bottom: none; border-radius: 0 0 8px 8px; }
+  a.meta-item:hover { background: rgba(255,255,255,0.06); }
+
+  .meta-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(163,195,232,0.75);
+    margin-bottom: 5px;
+  }
+
+  .meta-value {
+    font-size: 13px;
+    color: #cce0f0;
+    line-height: 1.5;
+    font-weight: 400;
+  }
+
+  /* ── CONTENT ── */
+  .content {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 48px;
+  }
+
+  /* ── SECTIONS ── */
+  .section {
+    padding: 80px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section:last-child { border-bottom: none; }
+
+  .section-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-eyebrow::before {
+    content: '';
+    width: 16px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: 400;
+    line-height: 1.15;
+    margin-bottom: 32px;
+  }
+
+  .section-title em { font-style: italic; color: var(--accent2); }
+
+  .prose {
+    font-size: 15px;
+    color: var(--text);
+    line-height: 1.85;
+    max-width: 680px;
+  }
+
+  .prose + .prose { margin-top: 16px; }
+
+  .prose strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  /* ── CALLOUT BOX ── */
+  .callout {
+    background: var(--dim);
+    border: 1px solid rgba(14,56,104,0.18);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 4px 4px 0;
+    padding: 20px 24px;
+    margin: 32px 0;
+  }
+
+  .callout-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .callout-text {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.7;
+  }
+
+  /* ── STATUS BADGE ── */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 3px;
+    font-weight: 500;
+  }
+
+  .status-badge::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+  }
+
+  .status-design {
+    background: var(--dim);
+    color: var(--accent);
+    border: 1px solid rgba(14,56,104,0.2);
+  }
+  .status-design::before { background: var(--accent); }
+
+  .status-progress {
+    background: var(--amber-bg);
+    color: var(--amber);
+    border: 1px solid rgba(122,79,0,0.2);
+  }
+  .status-progress::before { background: var(--amber); }
+
+  .status-delivered {
+    background: var(--green-bg);
+    color: var(--green);
+    border: 1px solid rgba(14,80,64,0.2);
+  }
+  .status-delivered::before { background: var(--green); }
+
+  /* ── ENHANCEMENT CARD ── */
+  .enhancement-card {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--bg2);
+    margin-top: 32px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+
+  .enhancement-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 24px 28px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .enhancement-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+  }
+
+  .enhancement-title {
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .enhancement-subtitle {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+
+  .enhancement-body {
+    padding: 24px 28px;
+  }
+
+  .enhancement-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.75;
+    max-width: 680px;
+    margin-bottom: 24px;
+  }
+
+  /* ── CAPABILITY GRID ── */
+  .capability-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .capability-card {
+    background: var(--bg2);
+    padding: 22px 20px;
+  }
+
+  .capability-icon {
+    font-size: 18px;
+    margin-bottom: 10px;
+    line-height: 1;
+  }
+
+  .capability-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+
+  .capability-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  /* ── BENEFIT LIST ── */
+  .benefit-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 24px;
+  }
+
+  .benefit-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg2);
+  }
+
+  .benefit-item:last-child { border-bottom: none; }
+
+  .benefit-check {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--green-bg);
+    border: 1px solid rgba(14,80,64,0.2);
+    color: var(--green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    font-weight: 500;
+  }
+
+  .benefit-text {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .benefit-text strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  /* ── WORKFLOW STEPS ── */
+  .workflow {
+    margin-top: 24px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .workflow-step {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .workflow-step:last-child { border-bottom: none; }
+
+  .workflow-num {
+    width: 60px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 20px 0;
+    border-right: 1px solid var(--border);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    background: var(--bg3);
+  }
+
+  .workflow-body {
+    padding: 18px 22px;
+    flex: 1;
+  }
+
+  .workflow-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 5px;
+  }
+
+  .workflow-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  /* ── AI FEATURE ROWS ── */
+  .ai-feature-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  .ai-feature {
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    overflow: hidden;
+    background: var(--bg2);
+  }
+
+  .ai-feature-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg2);
+  }
+
+  .ai-feature-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  .ai-feature-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .ai-feature-body {
+    padding: 14px 20px;
+  }
+
+  .ai-feature-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  .ai-feature-impact {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background: var(--dim);
+    border-radius: 3px;
+    font-size: 12px;
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.01em;
+  }
+
+  .ai-feature-impact::before {
+    content: '↗ ';
+    opacity: 0.6;
+  }
+
+  /* ── DATA MODEL TREE ── */
+  .model-tree {
+    margin-top: 32px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--bg2);
+  }
+
+  .model-node {
+    display: flex;
+    align-items: flex-start;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .model-node:last-child { border-bottom: none; }
+
+  .model-indent {
+    width: 48px;
+    min-height: 100%;
+    border-right: 1px solid var(--border);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 0;
+  }
+
+  .model-indent-2 { width: 96px; }
+  .model-indent-3 { width: 144px; }
+
+  .model-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #c0bdb6;
+    flex-shrink: 0;
+  }
+
+  .model-dot.primary { background: var(--accent); }
+  .model-dot.secondary { background: var(--accent2); opacity: 0.7; }
+  .model-dot.new { background: #d4820e; }
+
+  .model-body {
+    padding: 16px 20px;
+    flex: 1;
+  }
+
+  .model-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+
+  .model-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .model-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    padding: 2px 7px;
+    border-radius: 2px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  .badge-new     { background: rgba(212,130,14,0.12); color: #a05d00; border: 1px solid rgba(212,130,14,0.2); }
+  .badge-custom  { background: rgba(14,56,104,0.10); color: var(--accent); }
+  .badge-junction { background: rgba(14,56,104,0.10); color: #0e5040; }
+
+  /* ── ROADMAP TABLE ── */
+  .roadmap-table {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    border-collapse: collapse;
+    margin-top: 32px;
+    background: var(--bg2);
+  }
+
+  .roadmap-table th {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 10px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg3);
+    font-weight: 400;
+  }
+
+  .roadmap-table td {
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+
+  .roadmap-table tr:last-child td { border-bottom: none; }
+
+  .roadmap-table td:first-child {
+    font-weight: 500;
+    color: var(--text);
+    width: 260px;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--border);
+    padding: 28px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer-copy {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text);
+    letter-spacing: 0.08em;
+  }
+
+  .footer-nav {
+    display: flex;
+    gap: 24px;
+  }
+
+  .footer-nav a {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-nav a:hover { color: var(--accent); }
+
+  /* ── DIVIDER ── */
+  .section-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 40px 0;
+  }
+
+  @media (max-width: 900px) {
+    nav { padding: 16px 24px; }
+    .hero { grid-template-columns: 1fr; padding: 120px 24px 60px; gap: 48px; }
+    .content { padding: 0 24px; }
+    .capability-grid { grid-template-columns: 1fr 1fr; }
+    footer { padding: 24px; flex-direction: column; gap: 16px; }
+  }
+
+  @media (max-width: 600px) {
+    .capability-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body id="top">
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-back">Portfolio</a>
+  <span class="nav-label">My Vision &amp; Future State</span>
+</nav>
+
+<!-- HERO -->
+<div class="hero" style="max-width:1200px;margin:0 auto;">
+  <div>
+    <div class="hero-tag">My Vision &amp; Future State</div>
+    <h1 class="hero-title">Where QA<br><em>is going.</em></h1>
+    <p class="hero-summary">The system that replaced the SRD isn't finished, it's evolving. This page tells the full story where QA started, where it stands today, and where it is heading: a fully connected, AI-integrated QA platform where QA Analysts review, confirm, and decide and AI handles the execution.</p>
+  </div>
+  <div class="hero-meta">
+    <a href="#chapter-01" class="meta-item" style="text-decoration:none;cursor:pointer;transition:background 0.2s;">
+      <div class="meta-label">Chapter 01</div>
+      <div class="meta-value">Where QA Started</div>
+    </a>
+    <a href="#chapter-02" class="meta-item" style="text-decoration:none;cursor:pointer;transition:background 0.2s;">
+      <div class="meta-label">Chapter 02</div>
+      <div class="meta-value">Where It Is Now</div>
+    </a>
+    <a href="#chapter-03" class="meta-item" style="text-decoration:none;cursor:pointer;transition:background 0.2s;">
+      <div class="meta-label">Chapter 03</div>
+      <div class="meta-value">Where It Is Going</div>
+    </a>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- CHAPTER 01: WHERE QA STARTED -->
+  <div class="section" id="chapter-01">
+    <div class="section-eyebrow">Chapter 01</div>
+    <h2 class="section-title">Where QA<br><em>started.</em></h2>
+    <p class="prose">When I took over as QA Manager at Billtrust, there was no structure at all. There were no test cases, no standards for how issues were reported, and no organization in the SRD for QA activities. Testing was entirely ad hoc — testers verified things informally with no documented scope, no defined format, and no record of what had actually been tested. Comments were inconsistent. No one knew what anyone else had covered.</p>
+    <p class="prose" style="margin-top:16px;">The first phase of improvement was building structure into the SRD itself. I led the QA team to start writing test cases, follow a standard format for how test cases were written, and adopt a consistent approach to reporting issues inside the spreadsheet. Over time, the SRD evolved from an unorganized document into a structured QA record — with defined rows for test cases, consistent issue reporting, and a shared understanding of how QA activities were tracked.</p>
+    <p class="prose" style="margin-top:16px;">But even a well-structured spreadsheet has limits. As the team grew and projects became more complex, the SRD's structural constraints became impossible to work around. Everything still lived in one file. Nothing was connected. Nothing was reportable.</p>
+
+    <div class="callout">
+      <div class="callout-label">The problem with the SRD</div>
+      <div class="callout-text">A spreadsheet is a document, not a system. It has no lifecycle, no audit trail, and no reporting mechanism. As projects grew in complexity, the SRD became harder to maintain, harder to track, and impossible to query. QA needed a real platform.</div>
+    </div>
+
+    <div class="capability-grid" style="margin-top:32px;">
+      <div class="capability-card">
+        <div class="capability-icon">📄</div>
+        <div class="capability-title">Requirements in a spreadsheet</div>
+        <div class="capability-desc">Every requirement is a row in the SRD with an Ownership/Status column to indicate who owns it. There is no Salesforce record, no lifecycle, and no way to track a requirement's status or history outside of the spreadsheet.</div>
+      </div>
+      <div class="capability-card">
+        <div class="capability-icon">✍️</div>
+        <div class="capability-title">Test cases written by hand</div>
+        <div class="capability-desc">Test cases were written manually from the SRD requirements. There was no automated generation.</div>
+      </div>
+      <div class="capability-card">
+        <div class="capability-icon">📋</div>
+        <div class="capability-title">Results recorded in the SRD</div>
+        <div class="capability-desc">Test results were recorded directly in the SRD alongside the requirements, test cases, execution results, and issues. The SRD had structure, but all reporting was limited to what could be done inside a spreadsheet.</div>
+      </div>
+      <div class="capability-card">
+        <div class="capability-icon">🔍</div>
+        <div class="capability-title">Traceability depended on manual discipline</div>
+        <div class="capability-desc">Traceability existed but depended on everyone manually entering the correct requirement ID, test case ID, and execution result in the right place.</div>
+      </div>
+      <div class="capability-card">
+        <div class="capability-icon">📊</div>
+        <div class="capability-title">Reporting required Excel knowledge</div>
+        <div class="capability-desc">Reporting required knowledge of Excel formulas and pivot tables. Results were only as accurate as the data entered. If statuses were not updated correctly, the reporting reflected that.</div>
+      </div>
+      <div class="capability-card">
+        <div class="capability-icon">🔗</div>
+        <div class="capability-title">Everything lived on one sheet</div>
+        <div class="capability-desc">Everything lived on one sheet. Requirements, test cases, results, and issues were all connected but as projects grew, managing a single large spreadsheet became increasingly difficult to maintain and navigate.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAPTER 02: WHERE IT IS NOW -->
+  <div class="section" id="chapter-02">
+    <div class="section-eyebrow">Chapter 02</div>
+    <h2 class="section-title">Where it<br><em>is now.</em></h2>
+    <p class="prose">The QA ALM system replaced the SRD with a structured, connected platform built on Salesforce. Test cases, test plans, test runs, test case executions, and issues are now Salesforce records. QA data is reportable, traceable, and connected end to end.</p>
+    <p class="prose" style="margin-top:16px;">AI is already handling the two most time-consuming manual tasks: generating test cases from requirements and analyzing requirements for gaps and ambiguities before testing begins. Both are live and in use today.</p>
+
+    <div class="callout">
+      <div class="callout-label">What was built</div>
+      <div class="callout-text">The QA ALM system introduced a structured data model inside Salesforce: Sub-case → Test Plan → Test Case → Test Case Execution → Issue. Every record is connected. A test case links to a requirement. An execution links to a test case. An issue links to an execution. For the first time, QA data could be reported on, filtered, and traced from requirement to result.</div>
+    </div>
+
+    <div class="capability-grid" style="margin-top:32px;">
+      <div class="capability-card">
+        <div class="capability-icon">🏗️</div>
+        <div class="capability-title">Structured Salesforce data model</div>
+        <div class="capability-desc">Test cases, executions, issues, and results are all Salesforce records with defined fields, relationships, and lifecycle stages.</div>
+      </div>
+      <div class="capability-card">
+        <div class="capability-icon">🔗</div>
+        <div class="capability-title">End-to-end traceability</div>
+        <div class="capability-desc">Every test case links to a requirement. Every execution links to a test case. Every issue links to an execution. The full chain is visible inside one platform.</div>
+      </div>
+      <div class="capability-card">
+        <div class="capability-icon">📊</div>
+        <div class="capability-title">Salesforce reporting</div>
+        <div class="capability-desc">Pass rates, blocked counts, issue counts by type, and test cycle progress are all available as Salesforce reports.</div>
+      </div>
+      <div class="capability-card">
+        <div class="capability-icon">🤖</div>
+        <div class="capability-title">AI test case generation</div>
+        <div class="capability-desc">Claude reads the SRD mapping tab and generates CAPTURE and DISPLAY test cases based on documented rules. The QA Analyst reviews and imports.</div>
+      </div>
+      <div class="capability-card">
+        <div class="capability-icon">🔎</div>
+        <div class="capability-title">AI requirement analysis</div>
+        <div class="capability-desc">Claude reads the SRD and identifies gaps, ambiguities, and clarifying questions before any test case is written.</div>
+      </div>
+      <div class="capability-card">
+        <div class="capability-icon">📂</div>
+        <div class="capability-title">AI data analysis</div>
+        <div class="capability-desc">Claude reads the SRD and client data files, identifies missing data across all mapped positions, and identifies negative values.</div>
+      </div>
+    </div>
+
+    <div class="callout" style="margin-top:40px;">
+      <div class="callout-label">What is still missing</div>
+      <div class="callout-text">Requirements still live in the SRD. Every test case references a Requirement ID that points back to a row in a spreadsheet outside of Salesforce. The system is structured and connected, but it is not yet complete.</div>
+    </div>
+  </div>
+
+  <!-- CHAPTER 03: WHERE IT IS GOING -->
+  <div class="section" id="chapter-03">
+    <div class="section-eyebrow">Chapter 03</div>
+    <h2 class="section-title">Where it<br><em>is going.</em></h2>
+    <p class="prose">The next phase closes the remaining gap and extends AI deeper into every stage of the QA workflow. The Requirement Object — which brings requirements into Salesforce as structured records — is currently in the planning stage. An MCP server connection that allows Claude to read from and write to Salesforce directly is currently in progress.</p>
+    <p class="prose" style="margin-top:16px;">Together, they will make it possible for Claude to read requirements from Salesforce, generate test cases, and execute test cases — with no file exports, no import scripts, and no manual steps. Everything will stay inside one system.</p>
+
+    <!-- REQUIREMENT OBJECT -->
+    <div class="enhancement-card" style="margin-top:40px;">
+      <div class="enhancement-header">
+        <div>
+          <div class="enhancement-num">Next. New Salesforce Object</div>
+          <div class="enhancement-title">The Requirement Object</div>
+          <div class="enhancement-subtitle">A Salesforce object that gives every requirement its own record, owner, status, and lifecycle; created directly inside the Test Plan.</div>
+        </div>
+        <span class="status-badge status-design">Planned</span>
+      </div>
+      <div class="enhancement-body">
+        <div class="enhancement-desc">Requirements are currently text fields, a Requirement ID pointing back to a row in the SRD. Business Analysts create them inside the Test Plan. They link to test cases, executions, and issues. They have owners, statuses, and audit history. The SRD is no longer the system of record for what is being tested.</div>
+        <div class="capability-grid">
+          <div class="capability-card">
+            <div class="capability-icon">📋</div>
+            <div class="capability-title">Created inside the Test Plan</div>
+            <div class="capability-desc">Business Analysts create Requirement records inside the Test Plan.</div>
+          </div>
+          <div class="capability-card">
+            <div class="capability-icon">🏷️</div>
+            <div class="capability-title">Owner, status, lifecycle</div>
+            <div class="capability-desc">Each requirement has an assigned owner, a status field, and full edit and audit history inside Salesforce.</div>
+          </div>
+          <div class="capability-card">
+            <div class="capability-icon">🔗</div>
+            <div class="capability-title">Linked to test cases and executions</div>
+            <div class="capability-desc">Test cases link directly to the Requirement record. Executions trace back to the requirement.</div>
+          </div>
+          <div class="capability-card">
+            <div class="capability-icon">📈</div>
+            <div class="capability-title">Reportable inside Salesforce</div>
+            <div class="capability-desc">Once requirements are Salesforce records, they can be reported on like any other object. Which requirements have test coverage, which have open issues, and which are blocked are all visible in Salesforce reports.</div>
+          </div>
+          <div class="capability-card">
+            <div class="capability-icon">🔓</div>
+            <div class="capability-title">Removes the SRD dependency</div>
+            <div class="capability-desc">Requirements become self-contained inside Salesforce. The SRD is no longer required to understand what is being tested or to trace results back to requirements.</div>
+          </div>
+          <div class="capability-card">
+            <div class="capability-icon">🤖</div>
+            <div class="capability-title">A prerequisite for the MCP vision</div>
+            <div class="capability-desc">For Claude to read requirements from Salesforce via MCP, requirements must exist as Salesforce records. The Requirement object is what makes that possible.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DATA MODEL -->
+    <h3 style="font-family:'DM Serif Display',serif;font-size:1.2rem;font-weight:400;margin-top:48px;margin-bottom:8px;">Updated data model with the Requirement object</h3>
+    <p class="prose" style="font-size:13px;">The Requirement object sits between the Test Plan and the Test Case, linking test coverage back to the source requirement that defined what to build.</p>
+    <div class="model-tree">
+      <div class="model-node">
+        <div class="model-indent"><div class="model-dot primary"></div></div>
+        <div class="model-body">
+          <div class="model-name">Sub-case <span class="model-badge badge-custom">Custom Object</span></div>
+          <div class="model-desc">The parent container for a project. Each Sub-case has exactly one Test Plan and can have many Issues reported outside of the testing process entirely.</div>
+        </div>
+      </div>
+      <div class="model-node">
+        <div class="model-indent model-indent-2"><div class="model-dot secondary"></div></div>
+        <div class="model-body">
+          <div class="model-name">Test Plan <span class="model-badge badge-custom">Custom Object</span></div>
+          <div class="model-desc">One per Sub-case. Contains many Test Cases, many Test Runs, many Test Case Executions, and many Issues reported during testing.</div>
+        </div>
+      </div>
+      <div class="model-node">
+        <div class="model-indent model-indent-3"><div class="model-dot new"></div></div>
+        <div class="model-body">
+          <div class="model-name">Requirement <span class="model-badge badge-new">New Object</span></div>
+          <div class="model-desc">Created directly inside the Test Plan. Each requirement has its own record, owner, status, and full audit trail. Replaces the freetext Requirement ID field.</div>
+        </div>
+      </div>
+      <div class="model-node">
+        <div class="model-indent model-indent-3"><div class="model-dot secondary"></div></div>
+        <div class="model-body">
+          <div class="model-name">Test Case <span class="model-badge badge-custom">Custom Object</span></div>
+          <div class="model-desc">The reusable test scenario. Linked to one or more Requirement records.</div>
+        </div>
+      </div>
+      <div class="model-node">
+        <div class="model-indent model-indent-3"><div class="model-dot secondary"></div></div>
+        <div class="model-body">
+          <div class="model-name">Test Case Execution <span class="model-badge badge-custom">Custom Object</span></div>
+          <div class="model-desc">Result of running a test case in a Test Run. Traces back to the Requirement via the Test Case link, enabling requirement-level pass/fail reporting.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MCP VISION -->
+    <h3 style="font-family:'DM Serif Display',serif;font-size:1.2rem;font-weight:400;margin-top:64px;margin-bottom:8px;">The MCP vision. Claude reads and writes Salesforce directly</h3>
+    <p class="prose" style="font-size:14px;margin-bottom:24px;">When the Requirement object exists and an MCP server connection is established, the test case generation workflow collapses from six steps to five and every manual handoff step disappears.</p>
+
+    <p class="prose" style="font-size:13px;margin-bottom:12px;opacity:0.7;">Today - six steps, three manual handoffs:</p>
+    <div class="workflow">
+      <div class="workflow-step">
+        <div class="workflow-num">01</div>
+        <div class="workflow-body">
+          <div class="workflow-title" style="color:var(--muted);opacity:0.75;">Requirements authored in SRD</div>
+          <div class="workflow-desc" style="opacity:0.65;">Business Analyst writes requirements in a spreadsheet outside of Salesforce.</div>
+        </div>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-num">02</div>
+        <div class="workflow-body">
+          <div class="workflow-title" style="color:var(--muted);opacity:0.75;">QA Analyst uploads SRD to Claude</div>
+          <div class="workflow-desc" style="opacity:0.65;">Claude reads the file and generates test cases using the generation rules.</div>
+        </div>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-num">03</div>
+        <div class="workflow-body">
+          <div class="workflow-title" style="color:var(--muted);opacity:0.75;">Excel file exported and reviewed</div>
+          <div class="workflow-desc" style="opacity:0.65;">QA Analyst downloads AI_Generated_TestCases.xlsx and completes the human review checklist.</div>
+        </div>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-num">04</div>
+        <div class="workflow-body">
+          <div class="workflow-title" style="color:var(--muted);opacity:0.75;">File moved to Ready for Import folder</div>
+          <div class="workflow-desc" style="opacity:0.65;">QA Analyst manually moves the reviewed file to trigger the Power Automate flow.</div>
+        </div>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-num">05</div>
+        <div class="workflow-body">
+          <div class="workflow-title" style="color:var(--muted);opacity:0.75;">JAR tool imports test cases into Salesforce</div>
+          <div class="workflow-desc" style="opacity:0.65;">Power Automate executes the BAT script, which calls the JAR and creates the test case records in Salesforce.</div>
+        </div>
+      </div>
+      <div class="workflow-step" style="border-bottom:none;">
+        <div class="workflow-num">06</div>
+        <div class="workflow-body">
+          <div class="workflow-title" style="color:var(--muted);opacity:0.75;">QA Analyst executes test cases</div>
+          <div class="workflow-desc" style="opacity:0.65;">QA Analyst manually executes each test case in Salesforce, recording pass, fail, or blocked results and logging any issues found during execution.</div>
+        </div>
+      </div>
+    </div>
+
+    <p class="prose" style="font-size:13px;margin-top:32px;margin-bottom:12px;">With MCP - five steps, one human checkpoint:</p>
+    <div class="workflow">
+      <div class="workflow-step">
+        <div class="workflow-num">01</div>
+        <div class="workflow-body">
+          <div class="workflow-title">Requirements authored in Salesforce <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.08em;background:var(--dim);color:var(--accent);border:1px solid rgba(26,74,119,0.2);border-radius:2px;padding:1px 6px;margin-left:8px;vertical-align:middle;">Requirement Object</span></div>
+          <div class="workflow-desc">Business Analyst creates Requirement records directly inside the Test Plan in Salesforce.</div>
+        </div>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-num">02</div>
+        <div class="workflow-body">
+          <div class="workflow-title">Claude reads requirements from Salesforce <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.08em;background:var(--dim);color:var(--accent);border:1px solid rgba(26,74,119,0.2);border-radius:2px;padding:1px 6px;margin-left:8px;vertical-align:middle;">MCP Server</span></div>
+          <div class="workflow-desc">Claude connects to Salesforce via MCP and reads the Requirement records directly. No file upload required.</div>
+        </div>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-num">03</div>
+        <div class="workflow-body">
+          <div class="workflow-title">Claude generates test cases and presents for review</div>
+          <div class="workflow-desc">Claude applies the generation rules and presents the test cases for the QA Analyst to review and confirm before anything is written to Salesforce.</div>
+        </div>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-num">04</div>
+        <div class="workflow-body">
+          <div class="workflow-title">Claude writes test cases directly into Salesforce <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.08em;background:var(--dim);color:var(--accent);border:1px solid rgba(26,74,119,0.2);border-radius:2px;padding:1px 6px;margin-left:8px;vertical-align:middle;">MCP Server</span></div>
+          <div class="workflow-desc">Once confirmed, Claude creates the test case records in Salesforce, links them to the test plan, and adds them to the test run for execution.</div>
+        </div>
+      </div>
+      <div class="workflow-step" style="border-bottom:none;">
+        <div class="workflow-num">05</div>
+        <div class="workflow-body">
+          <div class="workflow-title">Claude executes test cases and auto-drafts issues on failure <span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.08em;background:var(--dim);color:var(--accent);border:1px solid rgba(26,74,119,0.2);border-radius:2px;padding:1px 6px;margin-left:8px;vertical-align:middle;">MCP Server</span></div>
+          <div class="workflow-desc">Claude executes each test case in Salesforce, records pass, fail, or blocked results, and automatically drafts an Issue record for any failed execution. The QA Analyst reviews and submits each drafted issue.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout" style="margin-top:40px;">
+      <div class="callout-label">What this requires</div>
+      <div class="callout-text">This vision depends on two things coming together: the Requirement object being built so requirements are structured Salesforce records, and an MCP server connection being established between Claude and Salesforce.</div>
+    </div>
+
+    <!-- AI CAPABILITIES -->
+    <h3 style="font-family:'DM Serif Display',serif;font-size:1.2rem;font-weight:400;margin-top:64px;margin-bottom:8px;">AI across the full QA workflow</h3>
+    <p class="prose" style="font-size:14px;margin-bottom:24px;">Beyond the MCP connection, AI is being extended into every remaining manual stage of the QA process - execution, issue management, and reporting.</p>
+
+    <div class="ai-feature-list">
+      <div class="ai-feature">
+        <div class="ai-feature-top">
+          <div>
+            <div class="ai-feature-label">Execution</div>
+            <div class="ai-feature-name">Automated test execution with pass/fail recording</div>
+          </div>
+          <span class="status-badge status-progress">In Progress</span>
+        </div>
+        <div class="ai-feature-body">
+          <div class="ai-feature-desc">AI executes test cases and records the execution results directly on the Test Case Execution record. The QA Analyst reviews AI-recorded results rather than performing every execution manually. For complex scenarios, the QA Analyst retains execution control.</div>
+          <div class="ai-feature-impact">Eliminates the most time-consuming manual step in the QA cycle</div>
+        </div>
+      </div>
+      <div class="ai-feature">
+        <div class="ai-feature-top">
+          <div>
+            <div class="ai-feature-label">Issue Management</div>
+            <div class="ai-feature-name">Auto-draft issue records on failed executions</div>
+          </div>
+          <span class="status-badge status-design">Planned</span>
+        </div>
+        <div class="ai-feature-body">
+          <div class="ai-feature-desc">When a test case execution is marked as failed, the system detects the failure and drafts an Issue record with the title, description, Issue Type, and Category. The QA Analyst reviews and submits rather than building the issue from scratch.</div>
+          <div class="ai-feature-impact">Reduces time from failure detection to issue submission</div>
+        </div>
+      </div>
+      <div class="ai-feature">
+        <div class="ai-feature-top">
+          <div>
+            <div class="ai-feature-label">Reporting</div>
+            <div class="ai-feature-name">Natural language reporting</div>
+          </div>
+          <span class="status-badge status-design">Planned</span>
+        </div>
+        <div class="ai-feature-body">
+          <div class="ai-feature-desc">QA Analysts and managers ask questions in plain English. "How many issues were deferred in Post UAT2?" or "Which test cases had the most failures this quarter?", and AI queries the Salesforce data and returns a direct answer. No report builder required. Makes QA data accessible to anyone on the team, not just people who know how to configure Salesforce reports.</div>
+          <div class="ai-feature-impact">Makes QA data accessible to the whole team without Salesforce report expertise</div>
+        </div>
+      </div>
+      <div class="ai-feature">
+        <div class="ai-feature-top">
+          <div>
+            <div class="ai-feature-label">Reporting</div>
+            <div class="ai-feature-name">AI release readiness reporting</div>
+          </div>
+          <span class="status-badge status-design">Planned</span>
+        </div>
+        <div class="ai-feature-body">
+          <div class="ai-feature-desc">AI reviews the full state of the Test Plan — pass rates, open issues, blocked executions, and deferred items — and generates a structured release readiness report that helps the QA Analyst make the go/no-go decision. No manual data gathering required.</div>
+          <div class="ai-feature-impact">Speeds up the release sign-off process by giving the QA Analyst a complete picture in seconds</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-copy">&copy; 2026. April's Portfolio</span>
+  <nav class="footer-nav">
+    <a href="index.html">Portfolio home</a>
+    <a href="index.html">Portfolio</a>
+    <a href="#top">Top</a>
+  </nav>
+</footer>
+
+</body>
+</html>
